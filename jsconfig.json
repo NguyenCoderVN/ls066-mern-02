@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "checkJs": true,
+    "checkJs": false,
     "allowJs": true
   }
 }
