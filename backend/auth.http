@@ -79,20 +79,48 @@ Content-Type: application/json
 }
 
 
-### 2. Login fails
-
-POST {{base_url}}/api/auth/login HTTP/1.1
-Content-Type: application/json
-
-{
-  "password": "123456789",
-  "username": "NguyenCoderVN"
-}
-
-
 ### 1. Logout
 
 POST {{base_url}}/api/auth/logout HTTP/1.1
 Content-Type: application/json
 
 {}
+
+
+### 1. Login ok
+
+# @name login
+
+POST {{base_url}}/api/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "password": "12345678",
+  "username": "NguyenCoderVN"
+}
+
+
+### Get all data
+
+GET {{base_url}}/api/auth/me HTTP/1.1
+Cookie: {{login.headers.Set-Cookie}}
+
+
+### 
+
+# @name login
+
+POST http://localhost:5000/api/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "password": "12345678",
+  "username": "NguyenCoderVN"
+}
+
+
+### 
+
+# @name getMe
+
+GET http://localhost:5000/api/auth/me HTTP/1.1
