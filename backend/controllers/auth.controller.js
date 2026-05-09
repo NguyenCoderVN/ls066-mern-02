@@ -1,7 +1,8 @@
+import { genSalt, hash, compare } from "bcrypt";
+
 import { handleError } from "../lib/utils/error.helper.js";
 import { generateTokenAndSetCookie } from "../lib/utils/generateToken.js";
 import { User } from "../models/user.model.js";
-import { genSalt, hash, compare } from "bcrypt";
 
 export const signup = async (req, res) => {
   try {
