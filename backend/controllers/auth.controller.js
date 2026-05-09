@@ -1,6 +1,6 @@
 import { generateTokenAndSetCookie } from "../lib/utils/generateToken.js";
 import { User } from "../models/user.model.js";
-import { genSalt, hash } from "bcrypt";
+import { genSalt, hash, compare } from "bcrypt";
 
 export const signup = async (req, res) => {
   try {
@@ -43,5 +43,29 @@ export const signup = async (req, res) => {
   } catch (error) {
     console.log("Error signing up user: ", error);
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const login = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const user = await User.findOne({ username });
+    const isPasswordValid = await compare(
+      password,
+      user?.password || "",
+    );
+
+    if (!user || !isPasswordValid)
+      return res
+        .status(400)
+        .json({ error: "Invalid username or password" });
+
+    generateTokenAndSetCookie(user._id, res);
+    const { password: _, ...userResponse } = user._doc;
+
+    res.status(200).json(userResponse);
+  } catch (error) {
+    console.log("Error logging in user: ", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
