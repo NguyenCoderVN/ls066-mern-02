@@ -1,0 +1,68 @@
+### 
+
+@base_url = http://localhost:5000
+
+
+### 1. Post new user
+
+POST {{base_url}}/api/auth/signup HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "nguyenmanhtriet@gmail.com",
+  "fullName": "Nguyen Manh Triet",
+  "password": "12345678",
+  "username": "NguyenCoderVN"
+}
+
+
+### 2. check existing user
+
+POST {{base_url}}/api/auth/signup HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "nguyenmanhtriet@gmail.com1",
+  "fullName": "Nguyen Manh Triet1",
+  "password": "12345678",
+  "username": "NguyenCoderVN"
+}
+
+
+### 3. check existing email
+
+POST {{base_url}}/api/auth/signup HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "nguyenmanhtriet@gmail.com",
+  "fullName": "Nguyen Manh Triet1",
+  "password": "12345678",
+  "username": "NguyenCoderVN1"
+}
+
+
+### 4. check format email
+
+POST {{base_url}}/api/auth/signup HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "nguyenmanhtrietgmail.com",
+  "fullName": "Nguyen Manh Triet",
+  "password": "12345678",
+  "username": "NguyenCoderVNa"
+}
+
+
+### 5. check password length < 6 character
+
+POST {{base_url}}/api/auth/signup HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "nguyenmanhtriet1@gmail.com",
+  "fullName": "Nguyen Manh Triet",
+  "password": "12345",
+  "username": "NguyenCoderVN1"
+}
