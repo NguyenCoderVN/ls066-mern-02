@@ -17,3 +17,9 @@ Content-Type: application/json
 
 GET http://127.0.0.1:5000/api/auth/me HTTP/1.1
 Cookie: jwt={{login.response.cookies.jwt.value}}
+
+
+### getUserProfile
+
+GET http://127.0.0.1:5000/api/users/profile/NguyenCoderVN HTTP/1.1
+Cookie: jwt={{login.response.cookies.jwt.value}}
