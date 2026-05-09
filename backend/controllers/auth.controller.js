@@ -41,7 +41,7 @@ export const signup = async (req, res) => {
     const { password: _, ...userResponse } = newUser._doc;
     res.status(201).json(userResponse);
   } catch (error) {
-    console.log("Error signing up user: ", error);
+    console.log("Error in signup controller", error.message);
     res.status(500).json({ message: error.message });
   }
 };
@@ -65,7 +65,17 @@ export const login = async (req, res) => {
 
     res.status(200).json(userResponse);
   } catch (error) {
-    console.log("Error logging in user: ", error);
+    console.log("Error in login controller: ", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const logout = async (req, res) => {
+  try {
+    res.clearCookie("jwt");
+    res.status(200).json({ message: "Logout successful" });
+  } catch (error) {
+    console.log("Error logging in logout controller", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
