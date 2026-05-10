@@ -1,5 +1,32 @@
 ### 
 
+@base_url = http://127.0.0.1:5000
+
+
+### 1. Post new user
+
+POST {{base_url}}/api/auth/signup HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "nguyenmanhtriet1@gmail.com",
+  "fullName": "Nguyen Manh Triet",
+  "password": "12345678",
+  "username": "NguyenCoderVN1"
+}
+
+
+### 1. followUnfollower
+
+POST {{base_url}}/api/users/follow/69ffdba6aeb2945641fd3c17 HTTP/1.1
+Content-Type: application/json
+Cookie: jwt={{login.response.cookies.jwt.value}}
+
+{}
+
+
+### 
+
 # @name login
 
 POST http://127.0.0.1:5000/api/auth/login HTTP/1.1
@@ -21,5 +48,5 @@ Cookie: jwt={{login.response.cookies.jwt.value}}
 
 ### getUserProfile
 
-GET http://127.0.0.1:5000/api/users/profile/NguyenCoderVN HTTP/1.1
+GET http://127.0.0.1:5000/api/users/profile/NguyenCoderVN1 HTTP/1.1
 Cookie: jwt={{login.response.cookies.jwt.value}}
