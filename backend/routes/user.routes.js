@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   followUnfollowUser,
+  getSuggestedUsers,
   getUserProfile,
 } from "../controllers/user.controller.js";
 import { protectRoute } from "../middleware/protectRoute.js";
@@ -13,3 +14,4 @@ userRoutes.post(
   protectRoute,
   followUnfollowUser,
 );
+userRoutes.get("/suggested", protectRoute, getSuggestedUsers);

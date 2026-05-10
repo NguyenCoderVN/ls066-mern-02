@@ -50,3 +50,9 @@ Cookie: jwt={{login.response.cookies.jwt.value}}
 
 GET http://127.0.0.1:5000/api/users/profile/NguyenCoderVN1 HTTP/1.1
 Cookie: jwt={{login.response.cookies.jwt.value}}
+
+
+### getSuggestedUsers
+
+GET http://127.0.0.1:5000/api/users/suggested HTTP/1.1
+Cookie: jwt={{login.response.cookies.jwt.value}}
