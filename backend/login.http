@@ -56,3 +56,15 @@ Cookie: jwt={{login.response.cookies.jwt.value}}
 
 GET http://127.0.0.1:5000/api/users/suggested HTTP/1.1
 Cookie: jwt={{login.response.cookies.jwt.value}}
+
+
+### Update user
+
+POST {{base_url}}/api/users/update HTTP/1.1
+Crntent-Type: application/json
+Cookie: jwt={{login.response.cookies.jwt.value}}
+
+{
+  "email": "nguyenmanhtriet2@gmail.com",
+  "username": "NguyenCoderVN"
+}

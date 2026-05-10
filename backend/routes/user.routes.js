@@ -3,6 +3,7 @@ import {
   followUnfollowUser,
   getSuggestedUsers,
   getUserProfile,
+  updateUser,
 } from "../controllers/user.controller.js";
 import { protectRoute } from "../middleware/protectRoute.js";
 
@@ -15,3 +16,4 @@ userRoutes.post(
   followUnfollowUser,
 );
 userRoutes.get("/suggested", protectRoute, getSuggestedUsers);
+userRoutes.post("/update", protectRoute, updateUser);
