@@ -1,4 +1,5 @@
 import { handleError } from "../lib/utils/error.helper.js";
+import { Notification } from "../models/notification.model.js";
 import { User } from "../models/user.model.js";
 
 export const getUserProfile = async (req, res) => {
@@ -35,6 +36,13 @@ export const followUnfollowUser = async (req, res) => {
     if (!isFollowing) {
       await user.updateOne({ $push: { following: followerId } });
       await followerUser.updateOne({ $push: { followers: userId } });
+      const newNotification = new Notification({
+        from: userId,
+        to: followerId,
+        type: "follow",
+      });
+      await newNotification.save();
+
       return res
         .status(200)
         .json({ message: "User followed successfully" });
