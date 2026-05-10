@@ -65,6 +65,6 @@ Crntent-Type: application/json
 Cookie: jwt={{login.response.cookies.jwt.value}}
 
 {
-  "email": "nguyenmanhtriet2@gmail.com",
+  "email": "nguyenmanhtriet3@gmail.com",
   "username": "NguyenCoderVN"
 }

@@ -77,18 +77,8 @@ export const getSuggestedUsers = async (req, res) => {
     return handleError(res, error, "getSuggestedUsers");
   }
 };
-
 export const updateUser = async (req, res) => {
-  const {
-    username,
-    fullName,
-    email,
-    currentPassword,
-    newPassword,
-    bio,
-    link,
-  } = req.body;
-  let { profileImg, coverImg } = req.body;
+  const { currentPassword, newPassword, ...fields } = req.body;
   const userId = req.user._id;
 
   try {
@@ -96,58 +86,48 @@ export const updateUser = async (req, res) => {
     if (!user)
       return res.status(404).json({ error: "User not found" });
 
-    if (
-      (currentPassword && !newPassword) ||
-      (!currentPassword && newPassword)
-    ) {
-      return res.status(400).json({
-        error: "Please provide both current and new password",
-      });
-    }
-
-    if (currentPassword && newPassword) {
-      const isMatch = await compare(currentPassword, user.password);
-      if (!isMatch)
+    // Handle Password Update
+    if (currentPassword || newPassword) {
+      if (!currentPassword || !newPassword)
         return res
           .status(400)
-          .json({ error: "Invalid current password" });
-      if (newPassword.length < 6)
-        return res.status(400).json({ error: "Password too short" });
+          .json({ error: "Provide both passwords" });
+
+      const isMatch = await compare(currentPassword, user.password);
+      if (!isMatch)
+        return res.status(400).json({ error: "Invalid password" });
 
       const salt = await genSalt(10);
       user.password = await hash(newPassword, salt);
     }
-    if (profileImg) {
-      if (user.profileImg)
-        await cloudinary.uploader.destroy(
-          user.profileImg.split("/").pop().split(".")[0],
-        );
 
-      const resUploadedProfileImg =
-        await cloudinary.uploader.upload(profileImg);
-      profileImg = resUploadedProfileImg.secure_url;
-    }
-    if (coverImg) {
-      if (user.coverImg)
-        await cloudinary.uploader.destroy(
-          user.coverImg.split("/").pop().split(".")[0],
+    // Handle Images
+    for (const imgType of ["profileImg", "coverImg"]) {
+      if (fields[imgType]) {
+        if (user[imgType])
+          await cloudinary.uploader.destroy(
+            user[imgType].split("/").pop().split(".")[0],
+          );
+        const uploaded = await cloudinary.uploader.upload(
+          fields[imgType],
         );
-
-      const resUploadedCoverImg =
-        await cloudinary.uploader.upload(coverImg);
-      coverImg = resUploadedCoverImg.secure_url;
+        user[imgType] = uploaded.secure_url;
+      }
     }
-    user.username = username || (await user).username;
-    user.fullName = fullName || (await user).fullName;
-    user.email = email || (await user).email;
-    user.bio = bio || (await user).bio;
-    user.link = link || (await user).link;
-    user.profileImg = profileImg || (await user).profileImg;
-    user.coverImg = coverImg || (await user).coverImg;
-    user = await user.save();
+
+    // Update remaining text fields
+    Object.assign(user, {
+      username: fields.username || user.username,
+      fullName: fields.fullName || user.fullName,
+      email: fields.email || user.email,
+      bio: fields.bio || user.bio,
+      link: fields.link || user.link,
+    });
+
+    await user.save();
     user.password = null;
     res.status(200).json(user);
   } catch (err) {
-    return handleError(res, err, "updateUser");
+    handleError(res, err, "updateUser");
   }
 };
