@@ -91,10 +91,10 @@ export const likeUnlikePost = async (req, res) => {
     const isLiked = post.likes.includes(userId);
     if (isLiked) {
       post.likes.pull(userId);
-      user.likedPosts.pull(userId);
+      user.likedPosts.pull(postId);
     } else {
       post.likes.push(userId);
-      user.likedPosts.push(userId);
+      user.likedPosts.push(postId);
       await new Notification({
         from: userId,
         to: post.userId,
@@ -130,5 +130,33 @@ export const getAllPosts = async (req, res) => {
     res.status(200).json(posts);
   } catch (error) {
     return handleError(res, error, "getAllPosts");
+  }
+};
+
+export const getLikedPost = async (req, res) => {
+  const userId = req.params.userId;
+
+  console.log(userId);
+  try {
+    const user = await User.findById(userId);
+    if (!user)
+      return res.status(404).json({ error: "User not found" });
+
+    const arrayLikedPostId = user.likedPosts;
+    const likedPosts = await Post.find({
+      _id: { $in: arrayLikedPostId },
+    })
+      .populate({
+        path: "userId",
+        select: "-password",
+      })
+      .populate({
+        path: "comments.user",
+        select: "-password",
+      });
+
+    res.status(200).json(likedPosts);
+  } catch (error) {
+    return handleError(res, error, "getLikedPost");
   }
 };

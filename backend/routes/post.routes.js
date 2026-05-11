@@ -4,6 +4,7 @@ import {
   createPost,
   deletePost,
   getAllPosts,
+  getLikedPost,
   likeUnlikePost,
 } from "../controllers/post.controller.js";
 import { protectRoute } from "../middleware/protectRoute.js";
@@ -15,3 +16,4 @@ postRoutes.post("/delete/:id", protectRoute, deletePost);
 postRoutes.post("/comment/:id", protectRoute, commentOnPost);
 postRoutes.post("/like/:postId", protectRoute, likeUnlikePost);
 postRoutes.get("/all", protectRoute, getAllPosts);
+postRoutes.get("/likes/:userId", protectRoute, getLikedPost);
