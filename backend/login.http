@@ -77,5 +77,12 @@ Content-Type: application/json
 Cookie: jwt={{login.response.cookies.jwt.value}}
 
 {
-  "text": "test"
+  "text": "test02"
 }
+
+
+### Delete post
+
+POST {{base_url}}/api/posts/delete/6a0127b6786013f23c8343ca HTTP/1.1
+Content-Type: application/json
+Cookie: jwt={{login.response.cookies.jwt.value}}
