@@ -1,4 +1,5 @@
 import { handleError } from "../lib/utils/error.helper.js";
+import { Notification } from "../models/notification.model.js";
 import { Post } from "../models/post.model.js";
 import { User } from "../models/user.model.js";
 import { v2 as cloudinary } from "cloudinary";
@@ -74,5 +75,41 @@ export const commentOnPost = async (req, res) => {
     res.status(200).json(post);
   } catch (error) {
     return handleError(res, error, "commentOnPost");
+  }
+};
+
+export const likeUnlikePost = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { postId } = req.params;
+
+    const post = await Post.findById(postId);
+    if (!post)
+      return res.status(404).json({ error: "Post not found" });
+    const userLikedPost = post.likes.includes(userId);
+
+    if (userLikedPost) {
+      post.likes.pull(userId);
+      await post.save();
+      res.status(200).json({
+        message: "Post unlike successfully",
+        post,
+      });
+    } else {
+      post.likes.push(userId);
+      await post.save();
+      const notification = new Notification({
+        from: userId,
+        to: postId,
+        type: "like",
+      });
+      await notification.save();
+      res.status(200).json({
+        message: "Post liked successfully",
+        post,
+      });
+    }
+  } catch (error) {
+    return handleError(res, error, "likeUnlikePost");
   }
 };
