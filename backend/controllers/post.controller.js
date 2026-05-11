@@ -110,7 +110,17 @@ export const likeUnlikePost = async (req, res) => {
 
 export const getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.find().sort({ createdAt: -1 });
+    const posts = await Post.find()
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "userId",
+        select: "-password",
+      })
+      .populate({
+        path: "comments.user",
+        select: "-password",
+      });
+
     if (posts.length === 0)
       return res.status(404).json({ error: "No posts found" });
     res.status(200).json(posts);
