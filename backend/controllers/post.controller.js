@@ -86,29 +86,23 @@ export const likeUnlikePost = async (req, res) => {
     const post = await Post.findById(postId);
     if (!post)
       return res.status(404).json({ error: "Post not found" });
-    const userLikedPost = post.likes.includes(userId);
 
-    if (userLikedPost) {
+    const isLiked = post.likes.includes(userId);
+    if (isLiked) {
       post.likes.pull(userId);
-      await post.save();
-      res.status(200).json({
-        message: "Post unlike successfully",
-        post,
-      });
     } else {
       post.likes.push(userId);
-      await post.save();
-      const notification = new Notification({
+      await new Notification({
         from: userId,
-        to: postId,
+        to: post.userId,
         type: "like",
-      });
-      await notification.save();
-      res.status(200).json({
-        message: "Post liked successfully",
-        post,
-      });
+      }).save();
     }
+    await post.save();
+    res.status(200).json({
+      message: `Post ${isLiked ? "unliked" : "liked"} successfully!`,
+      post,
+    });
   } catch (error) {
     return handleError(res, error, "likeUnlikePost");
   }
