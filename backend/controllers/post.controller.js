@@ -107,3 +107,14 @@ export const likeUnlikePost = async (req, res) => {
     return handleError(res, error, "likeUnlikePost");
   }
 };
+
+export const getAllPosts = async (req, res) => {
+  try {
+    const posts = await Post.find().sort({ createdAt: -1 });
+    if (posts.length === 0)
+      return res.status(404).json({ error: "No posts found" });
+    res.status(200).json(posts);
+  } catch (error) {
+    return handleError(res, error, "getAllPosts");
+  }
+};

@@ -106,3 +106,9 @@ Content-Type: application/json
 Cookie: jwt={{login.response.cookies.jwt.value}}
 
 {}
+
+
+### GET ALL POSTS
+
+GET {{base_url}}/api/posts/all HTTP/1.1
+Cookie: jwt={{login.response.cookies.jwt.value}}
