@@ -3,83 +3,59 @@
 @base_url = http://localhost:5000
 
 
-### 1. Post new user
+### POST Sign Up test1
 
 POST {{base_url}}/api/auth/signup HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "nguyenmanhtriet1@gmail.com",
-  "fullName": "Nguyen Manh Triet",
+  "email": "test1@gmail.com",
+  "fullName": "test1",
   "password": "12345678",
-  "username": "NguyenCoderVN1"
+  "username": "test1"
 }
 
 
-### 2. check existing user
+### POST Sign Up test2
 
 POST {{base_url}}/api/auth/signup HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "nguyenmanhtriet@gmail.com1",
-  "fullName": "Nguyen Manh Triet1",
+  "email": "test2@gmail.com",
+  "fullName": "test2",
   "password": "12345678",
-  "username": "NguyenCoderVN"
+  "username": "test2"
 }
 
 
-### 3. check existing email
+### POST Sign Up test3
 
 POST {{base_url}}/api/auth/signup HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "nguyenmanhtriet@gmail.com",
-  "fullName": "Nguyen Manh Triet1",
+  "email": "test3@gmail.com",
+  "fullName": "test3",
   "password": "12345678",
-  "username": "NguyenCoderVN1"
+  "username": "test3"
 }
 
 
-### 4. check format email
+### POST Login
 
-POST {{base_url}}/api/auth/signup HTTP/1.1
-Content-Type: application/json
-
-{
-  "email": "nguyenmanhtrietgmail.com",
-  "fullName": "Nguyen Manh Triet",
-  "password": "12345678",
-  "username": "NguyenCoderVNa"
-}
-
-
-### 5. check password length < 6 character
-
-POST {{base_url}}/api/auth/signup HTTP/1.1
-Content-Type: application/json
-
-{
-  "email": "nguyenmanhtriet1@gmail.com",
-  "fullName": "Nguyen Manh Triet",
-  "password": "12345",
-  "username": "NguyenCoderVN1"
-}
-
-
-### 1. Login ok
+# @name login
 
 POST {{base_url}}/api/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
   "password": "12345678",
-  "username": "NguyenCoderVN"
+  "username": "test3"
 }
 
 
-### 1. Logout
+### POST Logout
 
 POST {{base_url}}/api/auth/logout HTTP/1.1
 Content-Type: application/json
@@ -87,40 +63,7 @@ Content-Type: application/json
 {}
 
 
-### 1. Login ok
-
-# @name login
-
-POST {{base_url}}/api/auth/login HTTP/1.1
-Content-Type: application/json
-
-{
-  "password": "12345678",
-  "username": "NguyenCoderVN"
-}
-
-
-### Get all data
+### GET me
 
 GET {{base_url}}/api/auth/me HTTP/1.1
-Cookie: {{login.headers.Set-Cookie}}
-
-
-### 
-
-# @name login
-
-POST http://localhost:5000/api/auth/login HTTP/1.1
-Content-Type: application/json
-
-{
-  "password": "12345678",
-  "username": "NguyenCoderVN"
-}
-
-
-### 
-
-# @name getMe
-
-GET http://localhost:5000/api/auth/me HTTP/1.1
+Cookie: jwt={{login.response.cookies.jwt.value}}

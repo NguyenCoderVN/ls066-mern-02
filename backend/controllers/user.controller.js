@@ -20,13 +20,13 @@ export const getUserProfile = async (req, res) => {
 
 export const followUnfollowUser = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user._id.toString();
     const user = await User.findById(userId);
 
-    const { followerId } = req.params;
-    const followerUser = await User.findById(followerId);
+    const { followerUserId } = req.params;
+    const followerUser = await User.findById(followerUserId);
 
-    if (userId.toString() === followerId)
+    if (userId === followerUserId)
       return res
         .status(400)
         .json({ error: "You cannot follow yourself" });
@@ -34,14 +34,14 @@ export const followUnfollowUser = async (req, res) => {
     if (!user || !followerUser)
       return res.status(404).json({ error: "User not found" });
 
-    const isFollowing = user.following.includes(followerId);
+    const isFollowing = user.following.includes(followerUserId);
 
     if (!isFollowing) {
-      await user.updateOne({ $push: { following: followerId } });
+      await user.updateOne({ $push: { following: followerUserId } });
       await followerUser.updateOne({ $push: { followers: userId } });
       const newNotification = new Notification({
         from: userId,
-        to: followerId,
+        to: followerUserId,
         type: "follow",
       });
       await newNotification.save();
@@ -50,7 +50,7 @@ export const followUnfollowUser = async (req, res) => {
         .status(200)
         .json({ message: "User followed successfully" });
     } else {
-      await user.updateOne({ $pull: { following: followerId } });
+      await user.updateOne({ $pull: { following: followerUserId } });
       await followerUser.updateOne({ $pull: { followers: userId } });
       return res
         .status(200)
@@ -77,6 +77,7 @@ export const getSuggestedUsers = async (req, res) => {
     return handleError(res, error, "getSuggestedUsers");
   }
 };
+
 export const updateUser = async (req, res) => {
   const { currentPassword, newPassword, ...fields } = req.body;
   const userId = req.user._id;
@@ -85,6 +86,17 @@ export const updateUser = async (req, res) => {
     let user = await User.findById(userId);
     if (!user)
       return res.status(404).json({ error: "User not found" });
+
+    if (fields.username && fields.username !== user.username) {
+      const existingUser = await User.findOne({
+        username: fields.username,
+      });
+      if (existingUser)
+        return res
+          .status(400)
+          .json({ error: "Username already taken" });
+      user.username = fields.username;
+    }
 
     // Handle Password Update
     if (currentPassword || newPassword) {
