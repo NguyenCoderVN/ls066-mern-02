@@ -53,3 +53,26 @@ export const deletePost = async (req, res) => {
     return handleError(res, error, "deletePost");
   }
 };
+
+export const commentOnPost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.user._id;
+
+    const { text } = req.body;
+    if (!text) return res.status(400).json({ error: "Provide text" });
+
+    const post = await Post.findById(postId);
+    if (!post)
+      return res.status(404).json({ error: "Post not found" });
+
+    const comment = { user: userId, text };
+    post.comments.push(comment);
+
+    await post.save();
+
+    res.status(200).json(post);
+  } catch (error) {
+    return handleError(res, error, "commentOnPost");
+  }
+};

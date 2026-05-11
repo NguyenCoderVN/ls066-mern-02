@@ -86,3 +86,14 @@ Cookie: jwt={{login.response.cookies.jwt.value}}
 POST {{base_url}}/api/posts/delete/6a0127b6786013f23c8343ca HTTP/1.1
 Content-Type: application/json
 Cookie: jwt={{login.response.cookies.jwt.value}}
+
+
+### Comment on post
+
+POST {{base_url}}/api/posts/comment/6a012dfef6ef1f0f7caf00df HTTP/1.1
+Content-Type: application/json
+Cookie: jwt={{login.response.cookies.jwt.value}}
+
+{
+  "text": "comment"
+}
