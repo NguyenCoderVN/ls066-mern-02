@@ -18,3 +18,15 @@ export const deleteNotifications = catchAsync(async (req, res) => {
 
   res.status(200).json(result);
 });
+
+export const deleteOneNotification = catchAsync(async (req, res) => {
+  const { notifyId } = req.params;
+  const userId = req.user._id;
+
+  const result = await NotificationService.deleteOneNotification(
+    notifyId,
+    userId,
+  );
+
+  res.status(200).json(result);
+});

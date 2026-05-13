@@ -1,12 +1,13 @@
 ### 
 
-@base_url = http://localhost:5000/api
+@baseUrl = http://localhost:5000/api
 @contentType = application/json
-@token = {{login.response.cookies.jwt.value}}
+@tokenU1 = {{loginU1.response.cookies.jwt.value}}
 
-# @name login
+# @name loginU1
 
-POST {{base_url}}/auth/login HTTP/1.1
+POST {{baseUrl}}/auth/login HTTP/1.1
+Content-Type: {{contentType}}
 
 {
   "password": "password123",
@@ -14,13 +15,54 @@ POST {{base_url}}/auth/login HTTP/1.1
 }
 
 
-### 2. GET NOTIFICATIONS
+### 
 
-GET {{base_url}}/notifications HTTP/1.1
-Cookie: jwt={{token}}
+@postId = {{createPostU1.response.body.data._id}}
+
+# @name createPostU1
+
+POST {{baseUrl}}/posts/create HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: jwt={{tokenU1}}
+
+{
+  "img": "",
+  "text": "Bài viết test Like!"
+}
 
 
-### 3. DELETE ALL NOTIFICATIONS
+### 2.1. Login User 2
 
-DELETE {{base_url}}/notifications HTTP/1.1
-Cookie: jwt={{token}}
+@tokenU2 = {{loginU2.response.cookies.jwt.value}}
+
+# @name loginU2
+
+POST {{baseUrl}}/auth/login HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+  "password": "password123",
+  "username": "testuser2"
+}
+
+
+### User 2 Like bài viết của User 1
+
+POST {{baseUrl}}/posts/like/{{postId}} HTTP/1.1
+Cookie: jwt={{tokenU2}}
+
+
+### User 1 xem danh sách thông báo
+
+@notificationId = {{getNotifyU1.response.body.0._id}}
+
+# @name getNotifyU1
+
+GET {{baseUrl}}/notifications HTTP/1.1
+Cookie: jwt={{tokenU1}}
+
+
+### THỬ XÓA BẰNG BIẾN VỪA LẤY
+
+DELETE {{baseUrl}}/notifications/{{notificationId}} HTTP/1.1
+Cookie: jwt={{tokenU2}}

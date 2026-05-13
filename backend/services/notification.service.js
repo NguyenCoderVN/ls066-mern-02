@@ -1,4 +1,5 @@
 import { Notification } from "../models/notification.model.js";
+import AppError from "../utils/appError.js";
 
 class NotificationService {
   async getNotifications(userId) {
@@ -23,6 +24,24 @@ class NotificationService {
   async deleteNotifications(userId) {
     await Notification.deleteMany({ to: userId });
     return { message: "Notifications deleted successfully" };
+  }
+
+  async deleteOneNotification(notificationId, userId) {
+    const notification = await Notification.findById(notificationId);
+
+    if (!notification) {
+      throw new AppError("Notification not found", 404);
+    }
+
+    if (notification.to.toString() !== userId.toString()) {
+      throw new AppError(
+        "You are not allowed to delete this notification",
+        403,
+      );
+    }
+
+    await Notification.findByIdAndDelete(notificationId);
+    return { message: "Notification deleted successfully" };
   }
 }
 
