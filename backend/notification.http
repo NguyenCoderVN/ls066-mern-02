@@ -1,0 +1,26 @@
+### 
+
+@base_url = http://localhost:5000/api
+@contentType = application/json
+@token = {{login.response.cookies.jwt.value}}
+
+# @name login
+
+POST {{base_url}}/auth/login HTTP/1.1
+
+{
+  "password": "password123",
+  "username": "testuser1"
+}
+
+
+### 2. GET NOTIFICATIONS
+
+GET {{base_url}}/notifications HTTP/1.1
+Cookie: jwt={{token}}
+
+
+### 3. DELETE ALL NOTIFICATIONS
+
+DELETE {{base_url}}/notifications HTTP/1.1
+Cookie: jwt={{token}}

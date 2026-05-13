@@ -14,11 +14,8 @@ POST {{base_url}}/auth/login HTTP/1.1
 
 {
   "password": "password123",
-  "username": "testuser8"
+  "username": "testuser1"
 }
-
-
-### 
 
 
 ### 
