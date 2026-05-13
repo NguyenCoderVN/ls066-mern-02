@@ -1,57 +1,61 @@
 ### 
 
-@base_url = http://127.0.0.1:5000
-
-
-### POST Login
+@base_url = http://localhost:5000/api
+@contentType = application/json
 
 # @name login
 
-POST {{base_url}}/api/auth/login HTTP/1.1
-Content-Type: application/json
+POST {{base_url}}/auth/login HTTP/1.1
+Content-Type: {{contentType}}
 
 {
-  "password": "12345678",
-  "username": "test1"
+  "password": "password123",
+  "username": "testuser8"
 }
 
 
-### GET Profile by username
+### 
 
-GET {{base_url}}/api/users/profile/test1 HTTP/1.1
-Cookie: jwt={{login.response.cookies.jwt.value}}
+@myUsername = {{login.response.body.data.username}}
+@token = {{login.response.cookies.jwt.value}}
 
 
-### POST Update user
+### 
 
-POST {{base_url}}/api/users/update HTTP/1.1
-Content-Type: application/json
-Cookie: jwt={{login.response.cookies.jwt.value}}
+GET {{base_url}}/users/profile/{{myUsername}} HTTP/1.1
+Cookie: jwt={{token}}
+
+
+### 
+
+# @name getSuggested
+
+GET {{base_url}}/users/suggested HTTP/1.1
+Cookie: jwt={{token}}
+
+
+### 
+
+@targetUserId = {{getSuggested.response.body.data[0]._id}}
+
+
+### 
+
+# @name updateUser
+
+POST {{base_url}}/users/update HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: jwt={{token}}
 
 {
-  "username": "test3"
+  "bio": "Học lập trình tại Ho Chi Minh City 🚀",
+  "link": "https://github.com/nguyencodervn"
 }
 
 
-### 6a019180bcd4b9901fc7ae50 test1 id
+### 
 
+# @name toggleFollow
 
-### 6a0191a5bcd4b9901fc7ae51 test2 id
-
-
-### 6a0191aabcd4b9901fc7ae52 test3 id
-
-
-### POST follow userId
-
-POST {{base_url}}/api/users/follow/6a0191a5bcd4b9901fc7ae51 HTTP/1.1
-Content-Type: application/json
-Cookie: jwt={{login.response.cookies.jwt.value}}
-
-{}
-
-
-### GET suggested followers
-
-GET http://127.0.0.1:5000/api/users/suggested HTTP/1.1
-Cookie: jwt={{login.response.cookies.jwt.value}}
+POST {{base_url}}/users/follow/{{targetUserId}} HTTP/1.1
+Cookie: jwt={{token}}

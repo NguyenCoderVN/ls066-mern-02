@@ -1,89 +1,42 @@
-import { genSalt, hash, compare } from "bcrypt";
-
-import { handleError } from "../lib/utils/error.helper.js";
 import { generateTokenAndSetCookie } from "../lib/utils/generateToken.js";
-import { User } from "../models/user.model.js";
+import { catchAsync } from "../utils/catchAsync.js";
+import authService from "../services/auth.service.js";
+import userService from "../services/user.service.js";
 
-export const signup = async (req, res) => {
-  try {
-    const { username, fullName, password, email } = req.body;
+export const signup = catchAsync(async (req, res, next) => {
+  const user = await authService.registerUser(req.body);
+  generateTokenAndSetCookie(user._id, res);
 
-    const existingUser = await User.findOne({ username });
-    if (existingUser)
-      return res.status(400).json({ error: "User already exists" });
+  res.status(201).json({
+    status: "success",
+    data: user,
+  });
+});
 
-    const existingEmail = await User.findOne({ email });
-    if (existingEmail)
-      return res.status(400).json({ error: "Email already exists" });
+export const login = catchAsync(async (req, res, next) => {
+  const user = await authService.loginUser(req.body);
+  generateTokenAndSetCookie(user._id, res);
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email))
-      return res.status(400).json({ error: "Invalid email" });
+  res.status(200).json({
+    status: "success",
+    data: user,
+  });
+});
 
-    if (password.length < 6)
-      return res
-        .status(400)
-        .json({ error: "Password must be at least 6 characters" });
+export const logout = catchAsync(async (req, res, next) => {
+  res.cookie("jwt", "", { maxAge: 0 });
 
-    const salt = await genSalt(10);
-    const hashedPassword = await hash(password, salt);
+  res.status(200).json({
+    status: "success",
+    message: "Logged out successfully",
+  });
+});
 
-    const newUser = new User({
-      username,
-      fullName,
-      password: hashedPassword,
-      email,
-    });
+export const getMe = catchAsync(async (req, res, next) => {
+  const user = await userService.getUserById(req.user._id);
 
-    await newUser.save();
-    generateTokenAndSetCookie(newUser._id, res);
-
-    const { password: _, ...userResponse } = newUser._doc;
-    res.status(201).json(userResponse);
-  } catch (error) {
-    return handleError(res, error, "signup");
-  }
-};
-
-export const login = async (req, res) => {
-  try {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username });
-    const isPasswordValid = await compare(
-      password,
-      user?.password || "",
-    );
-
-    if (!user || !isPasswordValid)
-      return res
-        .status(400)
-        .json({ error: "Invalid username or password" });
-
-    generateTokenAndSetCookie(user._id, res);
-    const { password: _, ...userResponse } = user._doc;
-
-    res.status(200).json(userResponse);
-  } catch (error) {
-    return handleError(res, error, "login");
-  }
-};
-
-export const logout = async (req, res) => {
-  try {
-    res.clearCookie("jwt");
-    res.status(200).json({ message: "Logout successful" });
-  } catch (error) {
-    return handleError(res, error, "logout");
-  }
-};
-
-export const getMe = async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id).select(
-      "-password",
-    );
-    res.status(200).json(user);
-  } catch (error) {
-    return handleError(res, error, "getMe");
-  }
-};
+  res.status(200).json({
+    status: "success",
+    data: user,
+  });
+});

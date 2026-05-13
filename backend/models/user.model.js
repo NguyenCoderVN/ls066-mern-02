@@ -1,4 +1,5 @@
 import mongoose, { model, Schema } from "mongoose";
+import { genSalt, hash } from "bcrypt";
 
 const userSchema = new Schema(
   {
@@ -25,14 +26,12 @@ const userSchema = new Schema(
       {
         type: Schema.Types.ObjectId,
         ref: "User",
-        default: [],
       },
     ],
     followers: [
       {
         type: Schema.Types.ObjectId,
         ref: "User",
-        default: [],
       },
     ],
     profileImg: {
@@ -53,13 +52,27 @@ const userSchema = new Schema(
     },
     likedPosts: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "Post",
-        default: [],
       },
     ],
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    toJSON: {
+      transform: (doc, ret) => {
+        delete ret.password;
+        return ret;
+      },
+    },
+  },
 );
+
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+
+  const salt = await genSalt(10);
+  this.password = await hash(this.password, salt);
+});
 
 export const User = model("User", userSchema);
