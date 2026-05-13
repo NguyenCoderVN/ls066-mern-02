@@ -1,130 +1,78 @@
 ### 
 
-@base_url = http://127.0.0.1:5000
+@base_url = http://localhost:5000/api
+@contentType = application/json
 
 
 ### 
 
-# @name loginTest1
+@token2 = {{login.response.cookies.jwt.value}}
 
-POST {{base_url}}/api/auth/login HTTP/1.1
-Content-Type: application/json
+# @name login
 
-{
-  "password": "12345678",
-  "username": "test1"
-}
-
-
-### 
-
-# @name loginTest2
-
-POST {{base_url}}/api/auth/login HTTP/1.1
-Content-Type: application/json
+POST {{base_url}}/auth/login HTTP/1.1
 
 {
-  "password": "12345678",
-  "username": "test2"
+  "password": "password123",
+  "username": "testuser8"
 }
 
 
 ### 
 
-# @name loginTest3
 
-POST {{base_url}}/api/auth/login HTTP/1.1
-Content-Type: application/json
+### 
+
+@postId = {{createPost.response.body.data._id}}
+
+# @name createPost
+
+POST {{base_url}}/posts/create HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: jwt={{token2}}
 
 {
-  "password": "12345678",
-  "username": "test3"
+  "img": "",
+  "text": "Hôm nay trời đẹp, làm tí Neovim thôi! 🚀"
 }
 
 
 ### 
 
-# @name createPost1
+GET {{base_url}}/posts/all HTTP/1.1
+Cookie: jwt={{token2}}
 
-POST {{base_url}}/api/posts/create HTTP/1.1
-Cookie: jwt={{loginTest1.response.cookies.jwt.value}}
-Content-Type: application/json
+
+### 
+
+GET {{base_url}}/posts/me HTTP/1.1
+Cookie: jwt={{token2}}
+
+
+### 
+
+POST {{base_url}}/posts/like/{{postId}} HTTP/1.1
+Cookie: jwt={{token2}}
+
+
+### 
+
+POST {{base_url}}/posts/comment/{{postId}} HTTP/1.1
+Content-Type: {{contentType}}
+Cookie: jwt={{token2}}
 
 {
-  "text": "Chào buổi sáng! Tôi là test1, đây là bài viết đầu tiên."
+  "text": "Bài viết hay quá bạn ơi! +1 respect."
 }
 
 
-### Lấy ID bài viết vừa tạo (Copy ID từ response vào biến dưới)
+### 
 
-@postId = {{createPost1.response.body.data._id}}
-
-
-### Test2 Like bài của Test1
-
-POST {{base_url}}/api/posts/like/{{postId}} HTTP/1.1
-Cookie: jwt={{loginTest2.response.cookies.jwt.value}}
+GET {{base_url}}/posts/user/testuser8 HTTP/1.1
+Cookie: jwt={{token2}}
 
 
-### Test3 Comment vào bài của Test1
+### 
 
-POST {{base_url}}/api/posts/comment/{{postId}} HTTP/1.1
-Cookie: jwt={{loginTest3.response.cookies.jwt.value}}
-Content-Type: application/json
-
-{
-  "text": "Chào test1, tôi là test3 đây! Bài viết hay quá."
-}
-
-
-### Xem danh sách bài viết đã like của Test2 (Phải thấy bài của Test1)
-
-GET {{base_url}}/api/posts/likes/{{loginTest2.response.body.data._id}} HTTP/1.1
-Cookie: jwt={{loginTest2.response.cookies.jwt.value}}
-
-
-### Xem bài viết theo username (test1)
-
-GET {{base_url}}/api/posts/user/test1 HTTP/1.1
-Cookie: jwt={{loginTest3.response.cookies.jwt.value}}
-
-
-### Xem Newsfeed chung (All Posts)
-
-GET {{base_url}}/api/posts/all HTTP/1.1
-Cookie: jwt={{loginTest1.response.cookies.jwt.value}}
-
-
-### THẤT BẠI: Test2 cố tình xóa bài của Test1 (Mong đợi lỗi 401 Unauthorized)
-
-DELETE {{base_url}}/api/posts/{{postId}} HTTP/1.1
-Cookie: jwt={{loginTest2.response.cookies.jwt.value}}
-
-
-### THÀNH CÔNG: Test1 tự xóa bài của chính mình
-
-DELETE {{base_url}}/api/posts/{{postId}} HTTP/1.1
-Cookie: jwt={{loginTest1.response.cookies.jwt.value}}
-
-
-### 1. Test3 Follow Test1 (Sử dụng UserService toggleFollow)
-
-POST {{base_url}}/api/users/follow/{{loginTest1.response.body.data._id}} HTTP/1.1
-Cookie: jwt={{loginTest3.response.cookies.jwt.value}}
-
-
-### 2. Test1 đăng bài mới
-
-POST {{base_url}}/api/posts/create HTTP/1.1
-Cookie: jwt={{loginTest1.response.cookies.jwt.value}}
-Content-Type: application/json
-
-{
-  "text": "Bài viết bí mật cho những người follow tôi!"
-}
-
-
-### 3. Test3 kiểm tra Following Feed (Phải thấy bài trên)
-
-GET {{base_url}}/api/posts/following HTTP/1.1
-Cookie: jwt={{loginTest3.response.cookies.jwt.value}}
+DELETE {{base_url}}/posts/{{postId}} HTTP/1.1
+Cookie: jwt={{token2}}

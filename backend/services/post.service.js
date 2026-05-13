@@ -35,12 +35,14 @@ class PostService {
   async getUserPosts(username) {
     const user = await User.findOne({ username });
     if (!user) throw new AppError("User not found", 404);
+
     return await this.#getPopulatedPosts({ userId: user._id });
   }
 
   async getFollowingPosts(userId) {
     const user = await User.findById(userId);
     if (!user) throw new AppError("User not found", 404);
+
     return await this.#getPopulatedPosts({
       userId: { $in: user.following },
     });
@@ -49,6 +51,7 @@ class PostService {
   async getLikedPosts(userId) {
     const user = await User.findById(userId);
     if (!user) throw new AppError("User not found", 404);
+
     return await this.#getPopulatedPosts({
       _id: { $in: user.likedPosts },
     });
@@ -67,6 +70,7 @@ class PostService {
 
     if (post.img) {
       const imgId = post.img.split("/").pop().split(".")[0];
+
       await cloudinary.uploader.destroy(imgId);
     }
 
@@ -97,6 +101,7 @@ class PostService {
     }
 
     await Promise.all([post.save(), user.save()]);
+
     return { isLiked: !isLiked, post };
   }
 
@@ -106,6 +111,7 @@ class PostService {
     if (!post) throw new AppError("Post not found", 404);
 
     post.comments.push({ user: userId, text });
+
     return await post.save();
   }
 }

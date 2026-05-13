@@ -1,28 +1,22 @@
 import { Router } from "express";
 import { protectRoute } from "../middleware/protectRoute.js";
-import {
-  commentOnPost,
-  createPost,
-  deletePost,
-  getAllPosts,
-  getFollowingPosts,
-  getLikedPosts,
-  getMyPosts,
-  getUserPosts,
-  likeUnlikePost,
-} from "../controllers/post.controller.js";
+import * as postCtrl from "../controllers/post.controller.js";
 
 export const postRoutes = Router();
 
-postRoutes.post("/create", protectRoute, createPost);
-postRoutes.get("/me", protectRoute, getMyPosts);
-postRoutes.get("/user/:username", protectRoute, getUserPosts);
-postRoutes.get("/all", protectRoute, getAllPosts);
-postRoutes.delete("/:postId", protectRoute, deletePost);
+postRoutes.use(protectRoute);
 
-postRoutes.post("/like/:postId", protectRoute, likeUnlikePost);
-postRoutes.get("/likes/:userId", protectRoute, getLikedPosts);
+postRoutes.route("/all").get(postCtrl.getAllPosts);
+postRoutes.route("/me").get(postCtrl.getMyPosts);
+postRoutes.route("/following").get(postCtrl.getFollowingPosts);
+postRoutes.route("/create").post(postCtrl.createPost);
 
-postRoutes.post("/comment/:postId", protectRoute, commentOnPost);
+postRoutes
+  .route("/:postId")
+  .delete(postCtrl.deletePost)
+  .post(postCtrl.commentOnPost);
 
-postRoutes.get("/following", protectRoute, getFollowingPosts);
+postRoutes.get("/user/:username", postCtrl.getUserPosts);
+postRoutes.post("/like/:postId", postCtrl.likeUnlikePost);
+postRoutes.get("/likes/:userId", postCtrl.getLikedPosts);
+postRoutes.post("/comment/:postId", postCtrl.commentOnPost);
